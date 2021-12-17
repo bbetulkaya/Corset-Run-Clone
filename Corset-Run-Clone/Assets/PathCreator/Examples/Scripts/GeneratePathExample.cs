@@ -3,7 +3,7 @@
 namespace PathCreation.Examples {
     // Example of creating a path at runtime from a set of points.
 
-    [RequireComponent(typeof(PathCreator))]
+    // [RequireComponent(typeof(PathCreator))]
     public class GeneratePathExample : MonoBehaviour {
 
         public bool closedLoop = true;
@@ -12,7 +12,9 @@ namespace PathCreation.Examples {
         void Start () {
             if (waypoints.Length > 0) {
                 // Create a new bezier path from the waypoints.
+                
                 BezierPath bezierPath = new BezierPath (waypoints, closedLoop, PathSpace.xyz);
+                bezierPath.GlobalNormalsAngle = 90;
                 GetComponent<PathCreator> ().bezierPath = bezierPath;
             }
         }
