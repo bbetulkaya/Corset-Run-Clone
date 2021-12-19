@@ -1,32 +1,54 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Lean.Touch;
+using DG.Tweening;
 
 public class PlayerController : MonoBehaviour
 {
-    public GameObject visual;
+    public Transform visual;
+    public float minY;
+    public float maxY;
+    public float scaleValue;
 
-    // Update is called once per frame
     void Update()
     {
-        // ignore first frame mouse is pressed
-        if (Input.GetMouseButton(0) && !Input.GetMouseButtonDown(0))
+
+        if (Input.touchCount > 0)
         {
-            ScalePlayerWithDrag();
+            Touch touch = Input.GetTouch(0);
+
+            if (touch.phase == TouchPhase.Moved)
+            {
+                ScaleChange(touch.deltaPosition.y);
+            }
         }
 
     }
 
-    private void ScalePlayerWithDrag()
+    private void ScaleChange(float swipeDelta)
     {
-        float scaleFactor = Mathf.Pow(2f, Input.GetAxis("Mouse Y")* 1);
+        var tempScale = visual.transform.localScale;
+        var tempPos = visual.transform.position;
 
-        float newY = Mathf.Clamp(visual.transform.localScale.y * scaleFactor, 4f, 8f);
+        if (swipeDelta <= 0)
+        {
+            tempScale.y -= scaleValue;
+            if (tempScale.y < minY)
+            {
+                tempScale.y = minY;
+            }
+        }
+        else
+        {
+            tempScale.y += scaleValue;
+            if (tempScale.y > maxY)
+            {
+                tempScale.y = maxY;
+            }
+        }
 
-        visual.transform.localScale = new Vector3(
-                visual.transform.localScale.x,
-                newY,
-                visual.transform.localScale.z);
+        tempPos.y = tempScale.y / 2;
+        visual.transform.DOScale(tempScale, 0.5f);
+        visual.transform.DOLocalMoveY(tempPos.y, 0.8f, false);
     }
 }
